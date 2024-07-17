@@ -28,6 +28,18 @@ const client = new MongoClient(uri, {
 });
 
 
+
+async function run() {
+    try {
+
+        const database = client.db('MoneyBankDB')
+        const usersCollection = database.collection("users");
+        const transactionsCollection = database.collection("transfer");
+
+
+        // crud operation api start
+
+        
 const authenticate = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
@@ -49,17 +61,6 @@ const authorize = (roles) => (req, res, next) => {
   }
   next();
 };
-
-async function run() {
-    try {
-
-        const database = client.db('MoneyBankDB')
-        const usersCollection = database.collection("users");
-        const transactionsCollection = database.collection("transfer");
-
-
-        // crud operation api start
-
 
 
         app.post("/api/v1/register", async (req, res) => {
