@@ -343,6 +343,30 @@ const authorize = (roles) => (req, res, next) => {
             }
           });
 
+           
+        app.get('/api/v1/transactions/admin/type' ,authenticate, async (req, res) => {
+          const { type } = req.query;
+          const page = parseInt(req.query.page) || 1; // Default to page 1
+          const limit = parseInt(req.query.limit) || 10; // Default to 10 transactions per page
+          const skip = (page - 1) * limit;
+      
+          try {
+              const transactions = await transactionsCollection
+                  .find({ type })
+                  .sort({ timestamp: -1 }) // Sort by latest first
+                  .skip(skip)
+                  .limit(limit)
+                  .toArray();
+      
+              const total = await transactionsCollection.countDocuments({ type }); // Get total count of transactions of this type
+              const totalPages = Math.ceil(total / limit);
+      
+              res.status(200).json({ transactions, totalPages, currentPage: page });
+          } catch (error) {
+              console.error('Error fetching transactions by type:', error);
+              res.status(500).json({ message: 'An error occurred while fetching transactions by type' });
+          }
+      });
 
           app.get("/api/v1/balance/:id",authenticate, async (req, res) => {
             const userId = req.params.id; // Accessing the value of :id from the URL
